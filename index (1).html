@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Semakan Markah Pelajar Matrikulasi</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary-navy: #0A192F;
+      --secondary-navy: #1E293B;
+      --accent-red: #DC2626;
+      --light-red: #FEF2F2;
+      --accent-blue: #2563EB;
+      --bg-slate: #F8FAFC;
+      --card-white: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border-color: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-slate);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Styling */
+    header {
+      background: linear-gradient(135deg, var(--primary-navy) 0%, #1E3A8A 100%);
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+      border-bottom: 5px solid var(--accent-red);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .header-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .badge-tag {
+      background-color: var(--accent-red);
+      color: white;
+      padding: 0.35rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      color: #94A3B8;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 900px;
+      width: 100%;
+      margin: -1.5rem auto 2rem auto;
+      padding: 0 1rem;
+      flex: 1;
+    }
+
+    /* Search Box */
+    .search-card {
+      background: var(--card-white);
+      padding: 1.75rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .search-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .search-title i {
+      color: var(--accent-red);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.75rem;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn-search {
+      background-color: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 0.85rem 1.75rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-search:hover {
+      background-color: #1D4ED8;
+      transform: translateY(-1px);
+    }
+
+    /* Error / Alert Message */
+    .alert-box {
+      display: none;
+      background-color: var(--light-red);
+      border-left: 4px solid var(--accent-red);
+      color: var(--accent-red);
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+    }
+
+    /* Result Card Styling */
+    .result-card {
+      display: none;
+      background: var(--card-white);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 15px 30px -10px rgba(0,0,0,0.08);
+      overflow: hidden;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header-student {
+      background-color: var(--primary-navy);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 4px solid var(--accent-red);
+    }
+
+    .student-info h2 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin-bottom: 0.25rem;
+    }
+
+    .student-info p {
+      font-size: 0.9rem;
+      color: #94A3B8;
+    }
+
+    .grade-badge-container {
+      text-align: right;
+    }
+
+    .grade-badge {
+      display: inline-block;
+      padding: 0.5rem 1.25rem;
+      border-radius: 12px;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: white;
+      text-align: center;
+      box-shadow: 0 4px 6px -1rem rgba(0,0,0,0.1);
+    }
+
+    .grade-A, .grade-A-minus { background-color: #10B981; }
+    .grade-B-plus, .grade-B, .grade-B-minus { background-color: #2563EB; }
+    .grade-C-plus, .grade-C { background-color: #F59E0B; }
+    .grade-D, .grade-F { background-color: var(--accent-red); }
+
+    .card-body-student {
+      padding: 1.5rem;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      background-color: #F8FAFC;
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .meta-item .label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .meta-item .value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 0.2rem;
+    }
+
+    /* Marks Table */
+    .marks-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .marks-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .marks-table th, .marks-table td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+    }
+    
+    .marks-table th.text-center, 
+    .marks-table td.text-center {
+      text-align: center;
+    }
+    
+    .marks-table th {
+      background-color: #EDF2F7;
+      color: var(--primary-navy);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .marks-table td {
+      border-top: 1px solid var(--border-color);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .marks-table tr.total-row {
+      background-color: #F1F5F9;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .marks-table tr.total-row td {
+      color: var(--primary-navy);
+      border-top: 2px solid #CBD5E1;
+    }
+
+    /* Action PDF Button */
+    .btn-pdf {
+      width: 100%;
+      background-color: var(--accent-red);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+    .btn-pdf:hover {
+      background-color: #B91C1C;
+      transform: translateY(-2px);
+    }
+
+    /* Skala Gred Section */
+    .scale-card {
+      background: var(--card-white);
+      padding: 1.5rem;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      margin-top: 1.5rem;
+    }
+
+    .scale-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .scale-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .scale-toggle-btn {
+      background: none;
+      border: none;
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .scale-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .scale-table th, .scale-table td {
+      padding: 0.6rem;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .scale-table th {
+      background-color: #F1F5F9;
+      color: var(--primary-navy);
+      font-weight: 700;
+    }
+
+    .scale-table-container {
+      display: block;
+      overflow-x: auto;
+    }
+
+    /* Modal PDF Viewer */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(10, 25, 47, 0.85);
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-container {
+      background-color: white;
+      width: 100%;
+      max-width: 950px;
+      height: 90vh;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+      background-color: var(--primary-navy);
+      color: white;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid var(--accent-red);
+    }
+
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-close-modal {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-close-modal:hover {
+      background: var(--accent-red);
+    }
+
+    .modal-body {
+      flex: 1;
+      background-color: #525659;
+      position: relative;
+    }
+
+    .modal-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: auto;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.4rem; }
+      .input-group { flex-direction: column; }
+      .btn-search { width: 100%; }
+      .card-header-student { flex-direction: column; align-items: flex-start; }
+      .grade-badge-container { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Header -->
+  <header>
+    <div class="header-container">
+      <span class="badge-tag">Kolej Matrikulasi JOHOR</span>
+      <h1>Sistem Semakan Markah Tugasan Individu Pelajar</h1>
+      <p>Masukkan No. Matrik untuk membuat semakan Tugasan Individu Pelajar</p>
+    </div>
+  </header>
+
+  <!-- Content Container -->
+  <main>
+    <!-- Search Box Card -->
+    <div class="search-card">
+      <div class="search-title">
+        <i class="fa-solid fa-magnifying-glass"></i> Carian Rekod Pelajar
+      </div>
+      <form id="searchForm" onsubmit="event.preventDefault(); semakMarkah();">
+        <div class="input-group">
+          <div class="input-wrapper">
+            <i class="fa-solid fa-id-card"></i>
+            <input type="text" id="matrikInput" placeholder="Contoh: MS2616116907" required autocomplete="off">
+          </div>
+          <button type="submit" class="btn-search">
+            <i class="fa-solid fa-search"></i> Semak Markah
+          </button>
+        </div>
+      </form>
+      <div id="alertBox" class="alert-box">
+        <i class="fa-solid fa-circle-exclamation"></i> Nombor Matrik tidak dijumpai dalam pangkalan data. Sila semak semula.
+      </div>
+    </div>
+
+    <!-- Student Result Card -->
+    <div id="resultCard" class="result-card">
+      <div class="card-header-student">
+        <div class="student-info">
+          <h2 id="resNama">-</h2>
+          <p id="resMatrik">-</p>
+        </div>
+        <div class="grade-badge-container">
+          <div class="grade-badge" id="resGredBadge">-</div>
+        </div>
+      </div>
+
+      <div class="card-body-student">
+        <!-- Metadata -->
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="label">Praktikum</span>
+            <span class="value" id="resPraktikum">-</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">No. Set Soalan</span>
+            <span class="value" id="resSet">-</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Nama Pensyarah</span>
+            <span class="value" id="resPensyarah">-</span>
+          </div>
+        </div>
+
+        <!-- Marks Table Breakdown -->
+        <div class="marks-title">
+          <i class="fa-solid fa-chart-simple"></i> Pecahan Markah Keseluruhan
+        </div>
+        <table class="marks-table">
+          <thead>
+            <tr>
+              <th>Komponen Penilaian</th>
+              <th class="text-center">Markah Penuh</th>
+              <th class="text-center">Markah Diperoleh</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Markah TI</td>
+              <td class="text-center">45</td>
+              <td class="text-center" id="resTI">-</td>
+            </tr>
+            <tr>
+              <td>Numerical Skill</td>
+              <td class="text-center">5</td>
+              <td class="text-center" id="resNumerical">-</td>
+            </tr>
+            <tr class="total-row">
+              <td>JUMLAH MARKAH</td>
+              <td class="text-center">50</td>
+              <td class="text-center" id="resJumlah">-</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Preview PDF Button -->
+        <button id="btnViewPDF" class="btn-pdf">
+          <i class="fa-solid fa-file-pdf"></i> Lihat & Muat Turun Tugasan Individu Pelajar
+        </button>
+      </div>
+    </div>
+
+    <!-- Skala Gred Card -->
+    <div class="scale-card">
+      <div class="scale-header" onclick="toggleScale()">
+        <div class="scale-title">
+          <i class="fa-solid fa-graduation-cap"></i> Skala Penilaian Gred (Kolej Matrikulasi)
+        </div>
+        <button class="scale-toggle-btn" id="scaleToggleText">Paparkan Skala <i class="fa-solid fa-chevron-down"></i></button>
+      </div>
+      
+      <div id="scaleContent" class="scale-table-container" style="display: none;">
+        <table class="scale-table">
+          <thead>
+            <tr>
+              <th>Markah (/50)</th>
+              <th>Peratus (%)</th>
+              <th>Gred</th>
+              <th>Status Kelulusan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>40.0 - 50.0</td><td>80% - 100%</td><td><strong>A</strong></td><td>Cemerlang</td></tr>
+            <tr><td>37.5 - 39.9</td><td>75% - 79%</td><td><strong>A-</strong></td><td>Cemerlang</td></tr>
+            <tr><td>35.0 - 37.4</td><td>70% - 74%</td><td><strong>B+</strong></td><td>Kepujian</td></tr>
+            <tr><td>32.5 - 34.9</td><td>65% - 69%</td><td><strong>B</strong></td><td>Kepujian</td></tr>
+            <tr><td>30.0 - 32.4</td><td>60% - 64%</td><td><strong>B-</strong></td><td>Kepujian</td></tr>
+            <tr><td>27.5 - 29.9</td><td>55% - 59%</td><td><strong>C+</strong></td><td>Lulus</td></tr>
+            <tr><td>25.0 - 27.4</td><td>50% - 54%</td><td><strong>C</strong></td><td>Lulus</td></tr>
+            <tr><td>20.0 - 24.9</td><td>40% - 49%</td><td><strong>D</strong></td><td>Lulus Sebahagian</td></tr>
+            <tr><td>0.0 - 19.9</td><td>0% - 39%</td><td><strong>F</strong></td><td>Gagal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal PDF Previewer -->
+  <div id="pdfModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-file-pdf"></i> Paparan Tugasan Individu Pelajar
+        </div>
+        <button class="btn-close-modal" onclick="closeModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <iframe id="pdfFrame" src="" allow="autoplay"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Hak Cipta Terpelihara ARZK - Sistem Semakan Markah Pelajar Matrikulasi
+  </footer>
+
+  <script>
+    // Pangkalan Data 94 Pelajar Rasmi
+    const database = [
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ADRIANA AINUL HAYAT BINTI MUHAMMAD NOR FADZLI", matrik: "MS2616116907", praktikum: "H24", set: "SET 1", pdf: "https://drive.google.com/open?id=1d6bI0OrQP7eIx2VI5MVx1dLFElcMIbe-", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AMINAH FATIMAH BINTI ROSLI", matrik: "MS2616204097", praktikum: "H24", set: "SET 1", pdf: "https://drive.google.com/open?id=1DPuc9nNY7ceQ3ETYD9ASV-6yFqP6RV6_", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "BALQIS SAFIYYAH BINTI ZAINAL ABIDIN", matrik: "MS2616116438", praktikum: "H24", set: "SET 1", pdf: "https://drive.google.com/open?id=164FloQRM0wd6MF9jRRnF_P5uXShFJ5lX", ti: 44, numerical: 4.5, jumlah: 48.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD RYAN AFFIE BIN MOHD SAIFUL AFFENDY", matrik: "MS2616117328", praktikum: "H24", set: "SET 1", pdf: "https://drive.google.com/open?id=1VGNLiT-QdXWHN7Wp6ktApqPtlz760fmS", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR IFFAH ZARIFAH BINTI MOHD.HIDZAM", matrik: "MS2616116269", praktikum: "H24", set: "SET 1", pdf: "https://drive.google.com/open?id=1TTERMCY6w_S1Zfoxf2riO1FJlLoyNDgs", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR INSYIRAH NAZIRAH BINTI AZMAN", matrik: "MS2616117503", praktikum: "H24", set: "SET 1", pdf: "https://drive.google.com/open?id=1u59rLU6ODnjnuVHWEL7pAM8dxvlZTDBf", ti: 44, numerical: 4.5, jumlah: 48.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NURUL KHADIJAH BINTI ABDUL HALIM", matrik: "MS2616117896", praktikum: "H24", set: "SET 1", pdf: "https://drive.google.com/open?id=1S41HVds0SG-O8PwlsOeHMf9blA7YrKFV", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SITI NURAFINA BINTI MOHAMAD NORIZAN", matrik: "MS2616117384", praktikum: "H24", set: "SET 1", pdf: "https://drive.google.com/open?id=1Qp6hWgtqRLpXtWX-tnyL0wbwppxVuMj3", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "CHIA JIA HONG", matrik: "MS2616117372", praktikum: "H24", set: "SET 2", pdf: "https://drive.google.com/open?id=1LgfkuMK_FkMY-iLsMHorI040YBoFHPMR", ti: 44, numerical: 4.5, jumlah: 48.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "HASWEENA ARIYANA BINTI MOHD HAZANI", matrik: "MS2616117455", praktikum: "H24", set: "SET 2", pdf: "https://drive.google.com/open?id=1v9AFY7BmHonTqDHEydeMlgfrQpN4cgHQ", ti: 43, numerical: 4, jumlah: 47 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "HO KAI WEN", matrik: "MS2616190173", praktikum: "H24", set: "SET 2", pdf: "https://drive.google.com/open?id=1Mj2fnipzdGkJIU4EumJcRuSk84kAJKic", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NURIN IZZAH IRDINA BINTI ZUBIR", matrik: "MS2616116123", praktikum: "H24", set: "SET 2", pdf: "https://drive.google.com/open?id=1O6yibw-Ltu6XZVkYFwcg0-tt9h-IDxrZ", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "QUEE LI MING", matrik: "MS2616116682", praktikum: "H24", set: "SET 2", pdf: "https://drive.google.com/open?id=1K4blJf7iAEOa98os759OZyEC0DPzRavJ", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SHASA EZATI BINTI AHMAD SHABRI", matrik: "MS2616116437", praktikum: "H24", set: "SET 2", pdf: "https://drive.google.com/open?id=1T5u6gz00SF7w52qw7uuG6QA3WFcQSPCG", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SUJITHRAN A/L SIVAK KUMAR", matrik: "MS2616117857", praktikum: "H24", set: "SET 2", pdf: "https://drive.google.com/open?id=1fX6VvH-YkGuEU8e0059TSZKJ9sP7E-QW", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "TEOH JAELYN", matrik: "MS2616400263", praktikum: "H24", set: "SET 2", pdf: "https://drive.google.com/open?id=13h7tyIfGdqjkLZ6xyJzQxkN8TxuZHFJR", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "TEY CHU XIN", matrik: "MS2616117135", praktikum: "H24", set: "SET 2", pdf: "https://drive.google.com/open?id=1IWU3vPfXPNFNnpIVTSY7nW3QhhfAEuhl", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AMANINA IZZATI BINTI MUHAMMAD HAKIM", matrik: "MS2616117370", praktikum: "H24", set: "SET 3", pdf: "https://drive.google.com/open?id=1fL66VHP0LoAbo81Wgl8jxSF9FVWlgs2J", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "CHARMAINE TEH JING XUAN", matrik: "MS2616116574", praktikum: "H24", set: "SET 3", pdf: "https://drive.google.com/open?id=16HA_3BFlIpVxg4kxVXb622CqH436N0Py", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "CHONG JING TAO", matrik: "MS2616115869", praktikum: "H24", set: "SET 3", pdf: "https://drive.google.com/open?id=1FeApR-vLTPxmKYibFh7y1LBgVk_QHp-_", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ENOCH WONG BA XUAN", matrik: "MS2616116411", praktikum: "H24", set: "SET 3", pdf: "https://drive.google.com/open?id=1kfengi5V_B4aHdjCpjVAEEgyA1ZrQ04y", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "KOK YI MUN", matrik: "MS2616117115", praktikum: "H24", set: "SET 3", pdf: "https://drive.google.com/open?id=1GLP3Ig4LPJKWdVYjQ5Gisg-9L_V5g-p8", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "LEONG ZHI XUAN", matrik: "MS2616190166", praktikum: "H24", set: "SET 3", pdf: "https://drive.google.com/open?id=1QUJFuwwMKy4m9W0FrJGYTXtQ_k4aZdc9", ti: 43, numerical: 4.5, jumlah: 47.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NG DANCY", matrik: "MS2616117786", praktikum: "H24", set: "SET 3", pdf: "https://drive.google.com/open?id=19RjdC7oyd5YTTT7FQndXfjTThuZauMyG", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NURHAZIQAH BINTI NORDIN", matrik: "MS2616117392", praktikum: "H24", set: "SET 3", pdf: "https://drive.google.com/open?id=1Rjla1jD_RRg8m6gnTBz-A7ZC7TEoieWq", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SOFIA NUR IMANINA BINTI JAZMI", matrik: "MS2616204198", praktikum: "H24", set: "SET 3", pdf: "https://drive.google.com/open?id=102j_qd5YuSmAJbjSOfYZn_VEkaajdqdI", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AMNI NAFISAH BINTI AMRAN", matrik: "MS2616117329", praktikum: "H25", set: "SET 1", pdf: "https://drive.google.com/open?id=1Ly9CuKEggUKCd4sv3i8N_8lL078c4VWy", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "HAZIQ DANIEL BIN AZRIN", matrik: "MS2616116010", praktikum: "H25", set: "SET 1", pdf: "https://drive.google.com/open?id=1ES_2t5_OJejQweVBkrAkW4UWyl14BYvZ", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "KOH LI YUE", matrik: "MS2616117931", praktikum: "H25", set: "SET 1", pdf: "https://drive.google.com/open?id=1eZEqQnEu1A8SnCc41iep7OFPpH3ypGWe", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MICHELLE TAN CHAI YUN", matrik: "MS2616117569", praktikum: "H25", set: "SET 1", pdf: "https://drive.google.com/open?id=1XB59Jj-zoH8b3kH0tWZ42D10WxZjHEVi", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD HANEEF BIN SAMAD", matrik: "MS2616116774", praktikum: "H25", set: "SET 1", pdf: "https://drive.google.com/open?id=1UomYO_B13FN5A16_ZD92nqic-c6LTxIf", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR SYAHIDATUN NAJWA BINTI MOHAMAD JOHAN", matrik: "MS2616117206", praktikum: "H25", set: "SET 1", pdf: "https://drive.google.com/open?id=1O8In1VMbLkjx2WYCF76mYz0pyTHtOmwO", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SYARAH DAMIA BINTI MOHAMAD NIZAM", matrik: "MS2616116445", praktikum: "H25", set: "SET 1", pdf: "https://drive.google.com/open?id=1WAiGOIejHQZN1eGq2Zk9LW59D3-kQODC", ti: 44, numerical: 4.5, jumlah: 48.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "TOH SHY ROU", matrik: "MS2616117789", praktikum: "H25", set: "SET 1", pdf: "https://drive.google.com/open?id=1rHsEVq_MsVq7cmVqbG07Q49vfVa3A4Of", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AMMAR ALKHALEEQ BIN MOHAMAD ALBASRI", matrik: "MS2616116397", praktikum: "H25", set: "SET 2", pdf: "https://drive.google.com/open?id=1mPqKS0k52-1n5xqJJDQne2ycEz0jPzci", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "CHAN SHENG RU", matrik: "MS2616116945", praktikum: "H25", set: "SET 2", pdf: "https://drive.google.com/open?id=1LlVMjj5DmQkoZ1FwbFZtL2TzAyxPeqGR", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "GOO JUN LONG", matrik: "MS2616116647", praktikum: "H25", set: "SET 2", pdf: "https://drive.google.com/open?id=1lrdSoSAfVaJHLIH_PUiCewTuIdJSq0Sw", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "JANU A/P SATHIAN", matrik: "MS2616117217", praktikum: "H25", set: "SET 2", pdf: "https://drive.google.com/open?id=1NpW4fZIbcIsYISWSf4Dh5di2FrvsPAuQ", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR ARFAH QISTINA BINTI RAZIEE EFINNDIEE", matrik: "MS2616204177", praktikum: "H25", set: "SET 2", pdf: "https://drive.google.com/open?id=1lOiOoYRDEbRwj1vFBr18KcIPngjUzOi6", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR AZUREEN BASYIRAH BINTI MOHD TAUFIK", matrik: "MS2616117408", praktikum: "H25", set: "SET 2", pdf: "https://drive.google.com/open?id=1jAjQac5ND3RFCuOId0XobF9l1QRfSF2f", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR HIDAYAH SOFEA BINTI ABDULLAH", matrik: "MS2616116001", praktikum: "H25", set: "SET 2", pdf: "https://drive.google.com/open?id=19Hn3whb3NMKBmCcUqLQTrPjAYifCotWr", ti: 44, numerical: 4, jumlah: 48 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "TAN CHU TING", matrik: "MS2616117785", praktikum: "H25", set: "SET 2", pdf: "https://drive.google.com/open?id=1JbHP7DWdQ3BDzGn4_AGM_y1jdM0NFgvn", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "WONG YU XUAN", matrik: "MS2616117897", praktikum: "H25", set: "SET 2", pdf: "https://drive.google.com/open?id=1WqhSXlTG3lyMKzV0QgKksS0fVPVfe9nw", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ALYAA AFIQAH BINTI ANUAR", matrik: "MS2616117207", praktikum: "H25", set: "SET 3", pdf: "https://drive.google.com/open?id=1VB7R_1P9zbd5IJZyBtyrGdqVOmMuOfbd", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "LIM YI EN", matrik: "MS2616117778", praktikum: "H25", set: "SET 3", pdf: "https://drive.google.com/open?id=1GY4BdGkVpbAcCpsnxnSt-pk-mOff4wz-", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "LIM ZHI YI", matrik: "MS2616117369", praktikum: "H25", set: "SET 3", pdf: "https://drive.google.com/open?id=1nZ7sAn_K97Z0gRuyUYVi-D5S02BTpxY_", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "LIW YOU MING", matrik: "MS2616117877", praktikum: "H25", set: "SET 3", pdf: "https://drive.google.com/open?id=1qKtJtDua0slHxu2m9Zdfht1_Q8dpCgh2", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR ATHIRAH BINTI MOHD SHAIFUL", matrik: "MS2616116835", praktikum: "H25", set: "SET 3", pdf: "https://drive.google.com/open?id=17A23Qm_Bnp-pQRhwWklwblWZv5g3QbUW", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR HANIS FARHANAH BINTI NOR ISAM", matrik: "MS2616171997", praktikum: "H25", set: "SET 3", pdf: "https://drive.google.com/open?id=1ZQfy3Ur9POp5tT5fp2y_9IlirI4cBku9", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NURHANANIA DURRANI BINTI MOHD AZAM", matrik: "MS2616115736", praktikum: "H25", set: "SET 3", pdf: "https://drive.google.com/open?id=12kvR4ST9Gtt_uI7Nu3-mJqDIB0ywAbtI", ti: 44, numerical: 3.5, jumlah: 47.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NURUL NASRIYAH BINTI ABU BAKAR", matrik: "MS2616116267", praktikum: "H25", set: "SET 3", pdf: "https://drive.google.com/open?id=11wM0kvauDkNf75SL6210J8hx6bczXnar", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "YONG DAI QIAN", matrik: "MS2616116617", praktikum: "H25", set: "SET 3", pdf: "https://drive.google.com/open?id=1CDGK6taCsbqtbUS--qoLsGkFqGQnRmKt", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ANIS NASUHA BINTI ZAMRI", matrik: "MS2616116974", praktikum: "H26", set: "SET 1", pdf: "https://drive.google.com/open?id=1uJc_FNjphy_L8blWnvhiZQjKDfikBA__", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "FATIN RAZITA ZAHRA BINTI MUHAMMAD ZA`IM", matrik: "MS2616116345", praktikum: "H26", set: "SET 1", pdf: "https://drive.google.com/open?id=1eu4lLW1zFR1yr8JkD--O0B9WQjR6HBeY", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD AFIF HILMAN BIN AMRAN", matrik: "MS2616116021", praktikum: "H26", set: "SET 1", pdf: "https://drive.google.com/open?id=1bCbaJBlb43YKJk48GtjLbjQj5Bg40Ufr", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD SYAKIREZAIMAN BIN BAHRIM", matrik: "MS2616117268", praktikum: "H26", set: "SET 1", pdf: "https://drive.google.com/open?id=1hYQLj5aBNe3kOPyZfkrDJDYtuNJoFuCk", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ONG LI YANG", matrik: "MS2616116609", praktikum: "H26", set: "SET 1", pdf: "https://drive.google.com/open?id=12pe0tsMTFb8kZWR_QSgMRQR0cWShO-S2", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "TAN YI ROU", matrik: "MS2616117821", praktikum: "H26", set: "SET 1", pdf: "https://drive.google.com/open?id=1gAH0PX-6c0mv_HLeVUBgpVNClIu5wyGn", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "THULASI A/P GUNALAN", matrik: "MS2616117487", praktikum: "H26", set: "SET 1", pdf: "https://drive.google.com/open?id=1DPKhDtQRF4tMh-5ii0gIlRF1UxHoEe_3", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "WONG WAI NING", matrik: "MS2616117735", praktikum: "H26", set: "SET 1", pdf: "https://drive.google.com/open?id=1DwksFzX_lEon089s10UZbihGKr_mdDQc", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AHMAD SHAHIDIL AMIN BIN AZLIM", matrik: "MS2616116306", praktikum: "H26", set: "SET 2", pdf: "https://drive.google.com/open?id=1KcBwne0b0BPXH3dx2HFlDIiI1eq6tug3", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AISYAH MUNAWWARAH BINTI CHE AHMAD", matrik: "MS2616116825", praktikum: "H26", set: "SET 2", pdf: "https://drive.google.com/open?id=1agYsDTolJXJHJegdyRaEpi3SnyfZGDlq", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "BEH QIAN HUI", matrik: "MS2616116598", praktikum: "H26", set: "SET 2", pdf: "https://drive.google.com/open?id=16T28gWkQvhFeW0M_0mDmDcez-U-gOp-3", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "LEE YU TING", matrik: "MS2616117802", praktikum: "H26", set: "SET 2", pdf: "https://drive.google.com/open?id=1psClFRyIix8c1k9s3fVLU9Y8JrDG0Lf4", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "LOW SHUEN YA", matrik: "MS2616117460", praktikum: "H26", set: "SET 2", pdf: "https://drive.google.com/open?id=1OrnISfce6zE7a5tFGNfsNfpW3xP742ks", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD DANIAL BIN ABDUL RAHMAN", matrik: "MS2616117137", praktikum: "H26", set: "SET 2", pdf: "https://drive.google.com/open?id=1G3-UhloB1jOnAD_Cd76xjWfp6KgOCosj", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR SOFIA NAJWA BINTI MD SAFAREEN", matrik: "MS2616115977", praktikum: "H26", set: "SET 2", pdf: "https://drive.google.com/open?id=1Mpl7S9DGZRN-25ITeQbYQxy0ZNyI8qEN", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SAJAA SAMIIHAH BINTI MOHD SUHAIZAN", matrik: "MS2616204013", praktikum: "H26", set: "SET 2", pdf: "https://drive.google.com/open?id=1oWhxxPRj28T_1_SZiQyRoMojnALDMbAk", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "TAN PEI XIN", matrik: "MS2616117580", praktikum: "H26", set: "SET 2", pdf: "https://drive.google.com/open?id=1wp_wYguGZ3tJnxthLvTcIzh0tB7wUe1C", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "FATIN NASUHA BINTI NAZRI", matrik: "MS2616116979", praktikum: "H26", set: "SET 3", pdf: "https://drive.google.com/open?id=1Rx4x3iibPIWPMVAj1dPBwY8fsl6VBtzQ", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "JANICE LEE SZE XUN", matrik: "MS2616116547", praktikum: "H26", set: "SET 3", pdf: "https://drive.google.com/open?id=1jrLqxBZCufn9gGPZaQrTj-l4ueUCL2tE", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NISHA A/P SURESH KUMAR", matrik: "MS2616117445", praktikum: "H26", set: "SET 3", pdf: "https://drive.google.com/open?id=1qbXO64XzNZhInxu756BAH0bEy5YyyO8F", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NOOR AFIFAH BINTI IRUL", matrik: "MS2616117765", praktikum: "H26", set: "SET 3", pdf: "https://drive.google.com/open?id=11s5n_Izpr_RMHdKNS8WyZdJ-Zu2SO_Tv", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR FITHRIAH ADAWIYAH BINTI MOHD SUHAZAN", matrik: "MS2616117836", praktikum: "H26", set: "SET 3", pdf: "https://drive.google.com/open?id=1G10gizT-eduCMrkY8i3syZBUgq4fKOsM", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR IZZAH BINTI NAHARUDDIN", matrik: "MS2616117554", praktikum: "H26", set: "SET 3", pdf: "https://drive.google.com/open?id=1XRKAXUZCd9paXnZPbnyJQFEEUZf1XNKk", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "PUTERI NADIA NADHIRAH BINTI KHAIRIL ADZHAR", matrik: "MS2616115793", praktikum: "H26", set: "SET 3", pdf: "https://drive.google.com/open?id=1i26hqa0vze5aKjnKnVkgmXq7vd4ev3wj", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SYAZANA ATIKAH BATRISYIA BINTI JAFFAR", matrik: "MS2616116037", praktikum: "H26", set: "SET 3", pdf: "https://drive.google.com/open?id=1jAAl8GdCzvoccwwpr0mU5RKnigDx8U3u", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "YEO XIN NING", matrik: "MS2616116620", praktikum: "H26", set: "SET 3", pdf: "https://drive.google.com/open?id=1880v-WmWszYCx3QBQE3iATQHVURUxtPX", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AHMAD AIZUDDIN BIN AHMAD KHAIRUL ANUAR", matrik: "MS2616117523", praktikum: "H27", set: "SET 1", pdf: "https://drive.google.com/open?id=1cWFkNr_TrLcqsvx3srsT_zCKb4LzUoKd", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AISYAH HUMAIRA BINTI MOHD REDZUAN", matrik: "MS2616116263", praktikum: "H27", set: "SET 1", pdf: "https://drive.google.com/open?id=185YKCr6mJDiBcqLLMsCgPx-DUOMGJ2ox", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ALYA FARZANA BINTI ROSMIZAN", matrik: "MS2616116600", praktikum: "H27", set: "SET 1", pdf: "https://drive.google.com/open?id=1IMyihRlYO1x_0AIDbGOs7guAUDfOeyqs", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "CHEW JIA XIAN", matrik: "MS2616190164", praktikum: "H27", set: "SET 1", pdf: "https://drive.google.com/open?id=1GUXxS0b54Ndm686M3SodgsFUwlyzRg-e", ti: 44, numerical: 4, jumlah: 48 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "FARAH ASHIKIN BINTI MOHAMAD TAUFEK", matrik: "MS2616117824", praktikum: "H27", set: "SET 1", pdf: "https://drive.google.com/open?id=1wuc_mBrDlhryjTbGYCXKQ_H1KHBY5-lz", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR QISTINA BINTI HUZAIRUL AZRIN", matrik: "MS2616115918", praktikum: "H27", set: "SET 1", pdf: "https://drive.google.com/open?id=1kvR9DFDIGQkd6A_gF5kfsAm53pqPPX0K", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SHARIFAH HUMAIRA MAISARA BINTI SYED MUZAMIR", matrik: "MS2616117158", praktikum: "H27", set: "SET 1", pdf: "https://drive.google.com/open?id=1r2FLkyFX941mz8u7QJVD-s72zWSI1G0W", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "TEOH JIN SHUEN", matrik: "MS2616116921", praktikum: "H27", set: "SET 1", pdf: "https://drive.google.com/open?id=1WgN9O0QPjbaMgeFzePYyixhUf1-wEnI0", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ADEEL BIN KHALIL", matrik: "MS2616117124", praktikum: "H27", set: "SET 2", pdf: "https://drive.google.com/open?id=111qbU2UVZ01myUbdwAvO3S9ZXk9NyuZM", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "HOO YEE FEI", matrik: "MS2616116183", praktikum: "H27", set: "SET 2", pdf: "https://drive.google.com/open?id=14i0RBlk3gfHfh0tMhQnEX1Zlu6iy-vLU", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "JOANNA A/P SOOSAI MAARAN", matrik: "MS2616117380", praktikum: "H27", set: "SET 2", pdf: "https://drive.google.com/open?id=1w7fiMF7hRobaAZVONnb-4uMKPxgi5UGm", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "LIM ENN RU", matrik: "MS2616117886", praktikum: "H27", set: "SET 2", pdf: "https://drive.google.com/open?id=1L2lhvCIpgvyNnzw-1wgdXWiKIqUxYCkr", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ONG XIN YI", matrik: "MS2616117591", praktikum: "H27", set: "SET 2", pdf: "https://drive.google.com/open?id=1-6TZoNrbEsVZP85Qa-G1iQ3fMOoFWeua", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "RISKI ENG BIN MOHAMMAD RIDWAN", matrik: "MS2616115787", praktikum: "H27", set: "SET 2", pdf: "https://drive.google.com/open?id=16RoUOV8J2V8Kjv4d3DEspXK0GwY1plKT", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "WAN AHMAD NAZAAR ISLAM BIN WAN ZAINAL", matrik: "MS2616116747", praktikum: "H27", set: "SET 2", pdf: "https://drive.google.com/open?id=1rPS9GH4V6Qdk4tpF4YVHXKop0YgvTMnD", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AINI QAISUM BINTI JAAFAR", matrik: "MS2616116623", praktikum: "H27", set: "SET 3", pdf: "https://drive.google.com/open?id=1VWZKLqaCeMhKi1gQ_TH4USOQC7LJcC1P", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ASARUNNISAH BINTI KATHIR", matrik: "MS2616116075", praktikum: "H27", set: "SET 3", pdf: "https://drive.google.com/open?id=13VOMMxvTqGLZT-BG0_kD0fXWfO2V579e", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "HOO XIN MIN", matrik: "MS2616117865", praktikum: "H27", set: "SET 3", pdf: "https://drive.google.com/open?id=1jf1-Zci9qolTH8KyAsfBjTOi6yFl76OD", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD AIMAN HAFIZI BIN MOHD. ZAINAL", matrik: "MS2616117579", praktikum: "H27", set: "SET 3", pdf: "https://drive.google.com/open?id=1rT6QTldLp6iIvQZCS5uWpspvF4ChEekx", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR AMANI ELLYA BINTI ZAINUDIN", matrik: "MS2616117000", praktikum: "H27", set: "SET 3", pdf: "https://drive.google.com/open?id=1PLpuJ4uYDhlDL3OtNgEWqx4nK31I3eg8", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR SAKINAH BINTI MOHD KHAIRUDIN", matrik: "MS2616117325", praktikum: "H27", set: "SET 3", pdf: "https://drive.google.com/open?id=1XgeSZHeYVDHaxypIYavw02BjAnUE50H1", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NURUL RAIHANA BINTI KHAIRULNIZAM", matrik: "MS2616203983", praktikum: "H27", set: "SET 3", pdf: "https://drive.google.com/open?id=1ZM-0OuOyGJ3UYIpttMpCjH6NdTFK2W2l", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ONG LI XUAN", matrik: "MS2616116336", praktikum: "H27", set: "SET 3", pdf: "https://drive.google.com/open?id=1vSA0sUmYiqbBIOdJAmoRcpEK-L4fFR9w", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SIA NI HONG", matrik: "MS2616115679", praktikum: "H27", set: "SET 3", pdf: "https://drive.google.com/open?id=1n5ztGrr2KzuB4UTkcpjdeGnfKpPP-1k6", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ALYA BATRISYIA BINTI AZHAR", matrik: "MS2616115846", praktikum: "H28", set: "SET 1", pdf: "https://drive.google.com/open?id=1iN9_3vKUoAIzFIrzu3nnP-szwGbccaht", ti: 43, numerical: 4.5, jumlah: 47.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ASHLEYCA FERNANDEZ A/P JOHN", matrik: "MS2616117902", praktikum: "H28", set: "SET 1", pdf: "https://drive.google.com/open?id=121Wk5OShalFltI5MOtvYORhlyFScSmqZ", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "JOEY TAN ROU YI", matrik: "MS2616116614", praktikum: "H28", set: "SET 1", pdf: "https://drive.google.com/open?id=1rPpR3CJ9VJLRR0ZeuXulIKH4gJTdXVJc", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "KOH XIN YAN", matrik: "MS2616117509", praktikum: "H28", set: "SET 1", pdf: "https://drive.google.com/open?id=1M4z0ATLeg8e8ZJm42qVQqV3GwSEh8Lz4", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "LAU FANG LING", matrik: "MS2616116309", praktikum: "H28", set: "SET 1", pdf: "https://drive.google.com/open?id=1T_o3Y1hbfFMfqbYJmhLidUNw6pnzmNCb", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD FAIZ HAKIMI BIN HISAMUDIN", matrik: "MS2616116482", praktikum: "H28", set: "SET 1", pdf: "https://drive.google.com/open?id=1XiuuntQWdFfLWlhuDt0sxHS4rXCBrb3M", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NURUL IMAN BINTI MOHD ZUNAIDI", matrik: "MS2616117059", praktikum: "H28", set: "SET 1", pdf: "https://drive.google.com/open?id=1L7IInGJY5aiNbaQ7iRlX1Ap7IRvwRYMP", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "AZURA NAJIHA BINTI AZMI", matrik: "MS2616116893", praktikum: "H28", set: "SET 2", pdf: "https://drive.google.com/open?id=17B0Em5zj9CZcb0N-4nnwkpnST0-xsQ_5", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MARSYA NUR DAMIA BINTI MOHD YAZID", matrik: "MS2616115880", praktikum: "H28", set: "SET 2", pdf: "https://drive.google.com/open?id=1zgyaSXilUM1ieTzX2jAtvpt7M7Vt0K73", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD HAZIQ AMMAR BIN MOHD. ROSLI", matrik: "MS2616204113", praktikum: "H28", set: "SET 2", pdf: "https://drive.google.com/open?id=1Z23DIyM26FM-UTkdofJBFptkS5rvMugk", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD NUR ASNAWI BIN KHATA @ MOHD HATTA", matrik: "MS2616116426", praktikum: "H28", set: "SET 2", pdf: "https://drive.google.com/open?id=19nW5XQ5TmN2SFIeFbFi5tYDouNKPIVOw", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NATASHA FAIROSA BINTI MUHAMMAD HISHAM", matrik: "MS2616116581", praktikum: "H28", set: "SET 2", pdf: "https://drive.google.com/open?id=1paQR1tQsAThQ1yuTYXLe6A0pq9f8W4OB", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR ZAHIRAH BINTI MOHD SAFIEE", matrik: "MS2616115810", praktikum: "H28", set: "SET 2", pdf: "https://drive.google.com/open?id=1X8y2JQY78IUZSlPksFpasJDK-Zcr-if0", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "PANG YU YAN", matrik: "MS2616117250", praktikum: "H28", set: "SET 2", pdf: "https://drive.google.com/open?id=1Rg-_NAse8nypQhyjwERIN0MkwwuZsr3B", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "SITI NURSYAFIQAH HANA BINTI MOHD HAIRULAZMI", matrik: "MS2616116016", praktikum: "H28", set: "SET 2", pdf: "https://drive.google.com/open?id=1vucrmvRJkBcq5h0uSpyLGu3D9q13Svim", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "YARSHINI A/P MANICKAVASAGAM", matrik: "MS2616117822", praktikum: "H28", set: "SET 2", pdf: "https://drive.google.com/open?id=1okqjQoepdXdJ0sxFDIM_m11g_-bmmkmU", ti: 45, numerical: 5, jumlah: 50 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ALYA MARSYA BINTI FAUZI", matrik: "MS2416173875", praktikum: "H28", set: "SET 3", pdf: "https://drive.google.com/open?id=1b8KtJuCfPzr2wxUaKs6khDEgeJEomAn_", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "ASTER SEE XIN HUI", matrik: "MS2616116660", praktikum: "H28", set: "SET 3", pdf: "https://drive.google.com/open?id=1UAAMaIyjSb4zo2bs7JfHTvBuLdmUwElP", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "KEK JING YANG", matrik: "MS2616190169", praktikum: "H28", set: "SET 3", pdf: "https://drive.google.com/open?id=1aibrrRCoZkDpo2mnaBx3U6arI7dpsCDn", ti: 44, numerical: 4.5, jumlah: 48.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "LOH YEE VOON", matrik: "MS2616117800", praktikum: "H28", set: "SET 3", pdf: "https://drive.google.com/open?id=1VO0svGOHAgYaVD8Mq6KgRTJhydzztkJA", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MOHAMAD NURIMAN HAKIMI BIN SABARIJAN", matrik: "MS2616115848", praktikum: "H28", set: "SET 3", pdf: "https://drive.google.com/open?id=1PjYHHsDkv0HbZZT-jjXu-Bn-QYAT0yd-", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "MUHAMMAD ALIFF BIN JASLAN", matrik: "MS2616115987", praktikum: "H28", set: "SET 3", pdf: "https://drive.google.com/open?id=1tCrh3YLqYNy__79kkVxcOeQSsTYfTCwH", ti: 44, numerical: 4.5, jumlah: 48.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "NUR KAISAH BINTI NASRUN", matrik: "MS2616117105", praktikum: "H28", set: "SET 3", pdf: "https://drive.google.com/open?id=1eOqcqE3oMVUo7WA4MQq7119JQOZOFEbz", ti: 45, numerical: 4.5, jumlah: 49.5 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "PUTRA MUHAMMAD SYAKIR BIN AZMAN", matrik: "MS2616116408", praktikum: "H28", set: "SET 3", pdf: "https://drive.google.com/open?id=16ZuJ3UJEz6eSjSRO25J2Eu0tcXlIsHNY", ti: 44, numerical: 5, jumlah: 49 },
+      { pensyarah: "ABDUL RAZAK BIN AZIT", nama: "TAN JING XUAN", matrik: "MS2616116540", praktikum: "H28", set: "SET 3", pdf: "https://drive.google.com/open?id=1IgCXFe2rTWKexLBZHUa2fQIulVX5Icwt", ti: 44, numerical: 5, jumlah: 49 }
+    ];
+
+    // Pengiraan Gred Automatik Sahaja (Tanpa PNG)
+    function kiraGred(markahJumlah) {
+      if (markahJumlah >= 40.0) return { gred: "A", class: "grade-A" };
+      if (markahJumlah >= 37.5) return { gred: "A-", class: "grade-A-minus" };
+      if (markahJumlah >= 35.0) return { gred: "B+", class: "grade-B-plus" };
+      if (markahJumlah >= 32.5) return { gred: "B", class: "grade-B" };
+      if (markahJumlah >= 30.0) return { gred: "B-", class: "grade-B-minus" };
+      if (markahJumlah >= 27.5) return { gred: "C+", class: "grade-C-plus" };
+      if (markahJumlah >= 25.0) return { gred: "C", class: "grade-C" };
+      if (markahJumlah >= 20.0) return { gred: "D", class: "grade-D" };
+      return { gred: "F", class: "grade-F" };
+    }
+
+    // Convert Drive Link to Embed Preview Format
+    function convertDriveLinkToPreview(url) {
+      if (!url) return "";
+      let fileId = "";
+      if (url.includes("id=")) {
+        fileId = url.split("id=")[1].split("&")[0];
+      } else if (url.includes("/file/d/")) {
+        fileId = url.split("/file/d/")[1].split("/")[0];
+      }
+      return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : url;
+    }
+
+    // Function Semak Markah
+    function semakMarkah() {
+      const input = document.getElementById("matrikInput").value.trim().toUpperCase();
+      const alertBox = document.getElementById("alertBox");
+      const resultCard = document.getElementById("resultCard");
+
+      // Carian berdasarkan Matrik
+      const student = database.find(s => s.matrik.toUpperCase() === input);
+
+      if (student) {
+        alertBox.style.display = "none";
+
+        // Gred calculation
+        const gredInfo = kiraGred(student.jumlah);
+
+        // Populate Data
+        document.getElementById("resNama").innerText = student.nama;
+        document.getElementById("resMatrik").innerText = "NO. MATRIK: " + student.matrik;
+        document.getElementById("resPraktikum").innerText = student.praktikum;
+        document.getElementById("resSet").innerText = student.set;
+        document.getElementById("resPensyarah").innerText = student.pensyarah;
+
+        document.getElementById("resTI").innerText = student.ti + " / 45";
+        document.getElementById("resNumerical").innerText = student.numerical + " / 5";
+        document.getElementById("resJumlah").innerText = student.jumlah + " / 50";
+
+        // Gred Badge
+        const badge = document.getElementById("resGredBadge");
+        badge.innerText = "GRED " + gredInfo.gred;
+        badge.className = "grade-badge " + gredInfo.class;
+
+        // Button Click to Modal Viewer
+        const previewUrl = convertDriveLinkToPreview(student.pdf);
+        document.getElementById("btnViewPDF").onclick = function() {
+          openModal(previewUrl);
+        };
+
+        resultCard.style.display = "block";
+      } else {
+        resultCard.style.display = "none";
+        alertBox.style.display = "block";
+      }
+    }
+
+    // Modal PDF Viewer Functions
+    function openModal(pdfUrl) {
+      const modal = document.getElementById("pdfModal");
+      const frame = document.getElementById("pdfFrame");
+      frame.src = pdfUrl;
+      modal.style.display = "flex";
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("pdfModal");
+      const frame = document.getElementById("pdfFrame");
+      frame.src = "";
+      modal.style.display = "none";
+    }
+
+    // Skala Toggle
+    function toggleScale() {
+      const content = document.getElementById("scaleContent");
+      const toggleText = document.getElementById("scaleToggleText");
+      if (content.style.display === "none") {
+        content.style.display = "block";
+        toggleText.innerHTML = 'Sembunyikan <i class="fa-solid fa-chevron-up"></i>';
+      } else {
+        content.style.display = "none";
+        toggleText.innerHTML = 'Paparkan Skala <i class="fa-solid fa-chevron-down"></i>';
+      }
+    }
+  </script>
+</body>
+</html>
